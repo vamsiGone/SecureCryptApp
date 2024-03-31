@@ -1,0 +1,32 @@
+﻿body.dark-mode {
+    background-color: #222;
+    color: #fff;
+}
+
+.copy-icon {
+    cursor: pointer;
+    margin-left: 5px;
+    display: inline;
+}
+
+strong {
+    color: springgreen;
+}
+
+#Qpkey td {
+    padding-right: 10px;
+}
+
+.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+
+    .dark-mode table {
+        color: #fff;
+    }
+
+    .dark-mode th, .dark-mode td {
+        border-color: #555;
+        text-align: center;
+    }
