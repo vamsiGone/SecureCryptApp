@@ -20,6 +20,7 @@ namespace SecureCryptApp
         public string user="", apikey="";
         public int userid;
 
+
         [Obsolete]
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -75,8 +76,8 @@ namespace SecureCryptApp
                     var content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
 
                     //get from web.config
-                    string APIKEY = ConfigurationManager.AppSettings["ApiEmail"];
-                    string APIEMAIL = ConfigurationManager.AppSettings["Apikey"];
+                    string APIKEY = ConfigurationManager.AppSettings["Apikey"];
+                    string APIEMAIL = ConfigurationManager.AppSettings["ApiEmail"];
 
                     // Add API key to request headers
                     client.DefaultRequestHeaders.Add("APIKEY", APIKEY);
