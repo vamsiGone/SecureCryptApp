@@ -60,7 +60,7 @@ namespace SecureCryptApp
             using (HttpClient client = new HttpClient())
             {
                 // API endpoint URL
-                string apiUrl = "http://localhost:5203/SecureCrypt";
+               string apiUrl = ConfigurationManager.AppSettings["ApiUrl"]; 
 
                 // Prepare data to send to the API
                 var data = new
