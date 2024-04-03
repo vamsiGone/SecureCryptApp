@@ -74,7 +74,7 @@ namespace SecureCryptApp
                 try
                 {
                     // Convert data to JSON 
-                    var content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+                    var content = new StringContent(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
 
                     //get from web.config
                     string APIKEY = ConfigurationManager.AppSettings["Apikey"];
@@ -129,7 +129,7 @@ namespace SecureCryptApp
                 try
                 {
                     // Convert data to JSON 
-                    var content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+                    var content = new StringContent(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
 
                     // Add API key to request headers
                     client.DefaultRequestHeaders.Add("APIKEY", APIKEY);
@@ -168,13 +168,15 @@ namespace SecureCryptApp
                         if (dataSet != null && dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
                         {
                             GridRepeat.Visible = true;
+                            count.Visible = false;
                             GridRepeat.DataSource = dataSet;
                             GridRepeat.DataBind();
                         }
                         else
                         {
                             GridRepeat.Visible = false;
-                            ScriptManager.RegisterStartupScript(this.Page, GetType(), "AlertMessage", "$(function(){AlertMessage('error','No Records Found')});", true);
+                            count.Visible = true;
+                            count.Text = "No Records Found";
                             return;
                         }
 

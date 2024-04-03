@@ -109,6 +109,7 @@
                                         <h1>History</h1>
                                         <div class="row">
                                             <div class="row justify-content-center">
+                                                <asp:Label runat="server" ID="count" Visible="false" Style="text-align: center;"></asp:Label>
                                                 <asp:Repeater ID="GridRepeat" runat="server">
                                                     <HeaderTemplate>
                                                         <table class="table table-bordered">
