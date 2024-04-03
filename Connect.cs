@@ -73,32 +73,16 @@ namespace SecureCryptApp
             sda.Fill(ds);
             return ds;
         }
-
-        public int InsertLog(string input, string output, string pkey,string mode, int Userid)
-        {
-            string query = "INSERT INTO EncryptDecryptLog (PlainText, EncryptRDecryptText,privatekey,Mode,Userid) VALUES ( @input,@output,@pkey,@mode,@UserId)";
-            SqlCommand command = new SqlCommand(query, objSqlConnection);
-            command.Parameters.AddWithValue("@input", input); 
-            command.Parameters.AddWithValue("@output", output);
-            command.Parameters.AddWithValue("@pkey", pkey);
-            command.Parameters.AddWithValue("@mode", mode);
-            command.Parameters.AddWithValue("@UserId", Userid);
-           
-            objSqlConnection.Open();
-            int rowsAffected = command.ExecuteNonQuery();
-            return rowsAffected;
-        }
-
-        public DataSet History(int userid)
-        {
-            DataSet ds = new DataSet();
-            string query = "select row_number() over(order by id) as sno,* from encryptdecryptlog where userid=@userid";
-            SqlCommand command = new SqlCommand(query, objSqlConnection);
-            command.Parameters.AddWithValue("@userid", userid);
-            SqlDataAdapter sda = new SqlDataAdapter(command);
-            sda.Fill(ds);
-            return ds;
-        }
+        //public DataSet History(int userid)
+        //{
+        //    DataSet ds = new DataSet();
+        //    string query = "select row_number() over(order by id) as sno,* from encryptdecryptlog where userid=@userid";
+        //    SqlCommand command = new SqlCommand(query, objSqlConnection);
+        //    command.Parameters.AddWithValue("@userid", userid);
+        //    SqlDataAdapter sda = new SqlDataAdapter(command);
+        //    sda.Fill(ds);
+        //    return ds;
+        //}
 
         public int RaiseQuery(string name,string email,string subject,string message)
         {

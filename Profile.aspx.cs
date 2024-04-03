@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -17,19 +18,19 @@ namespace SecureCryptApp
         [Obsolete]
         Connect Con = new Connect();
 
-        public string user="", apikey="";
+        public string user = "", apikey = "";
         public int userid;
 
 
         [Obsolete]
         protected void Page_Load(object sender, EventArgs e)
         {
-            user= Session["user"].ToString();
+            user = Session["user"].ToString();
             apikey = Session["Apikey"].ToString();
             string uuserid = Session["Userid"].ToString();
             userid = Convert.ToInt32(uuserid);
 
-            if ( user == null || user=="")
+            if (user == null || user == "")
             {
                 Response.Redirect("Index.aspx");
             }
@@ -60,7 +61,7 @@ namespace SecureCryptApp
             using (HttpClient client = new HttpClient())
             {
                 // API endpoint URL
-               string apiUrl = ConfigurationManager.AppSettings["ApiUrl"]; 
+                string apiUrl = ConfigurationManager.AppSettings["ApiUrl"];
 
                 // Prepare data to send to the API
                 var data = new
@@ -95,8 +96,6 @@ namespace SecureCryptApp
                         // Handle the result from the API (e.g., display it in a label)
                         Output.Text = result;
                         Input.Text = "";
-
-                        Con.InsertLog(input, result, secretkey, mode, userid);
                         BindGrid();
                     }
                     else
@@ -114,35 +113,98 @@ namespace SecureCryptApp
         }
 
         [Obsolete]
-        protected void BindGrid()
+        protected async void BindGrid()
         {
-            using (DataSet datagrid = Con.History(userid))
+            // Create an instance of HttpClient
+            using (HttpClient client = new HttpClient())
             {
-                if (datagrid != null && datagrid.Tables.Count > 0 && datagrid.Tables[0].Rows.Count > 0)
+                // API endpoint URL
+                string apiUrl = ConfigurationManager.AppSettings["ApiUrlHistory"];
+
+                // Prepare data to send to the API
+                var data = new { userId = userid };
+
+                try
                 {
-                    GridRepeat.Visible = true;
-                    GridRepeat.DataSource = datagrid;
-                    GridRepeat.DataBind(); 
+                    // Convert data to JSON 
+                    var content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+
+                    //get from web.config
+                    string APIKEY = ConfigurationManager.AppSettings["Apikey"];
+                    string APIEMAIL = ConfigurationManager.AppSettings["ApiEmail"];
+
+                    // Add API key to request headers
+                    client.DefaultRequestHeaders.Add("APIKEY", APIKEY);
+                    client.DefaultRequestHeaders.Add("EMAIL", APIEMAIL);
+
+                    // Call the API asynchronously
+                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+
+                    // Check if the response is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Deserialize the JSON response to a list of HistoryEntry objects
+                        var con = await response.Content.ReadAsStringAsync();
+                        var historyList = JsonConvert.DeserializeObject<List<HistoryEntry>>(con);
+
+                        // Convert the list to a DataTable
+                        DataTable dataTable = new DataTable("History");
+                        dataTable.Columns.Add("Sno", typeof(int));
+                        dataTable.Columns.Add("Id", typeof(int));
+                        dataTable.Columns.Add("PlainText", typeof(string));
+                        dataTable.Columns.Add("EncryptRDecryptText", typeof(string));
+                        dataTable.Columns.Add("privatekey", typeof(string));
+                        dataTable.Columns.Add("Mode", typeof(string));
+                        dataTable.Columns.Add("UserId", typeof(int));
+
+                        foreach (var entry in historyList)
+                        {
+                            dataTable.Rows.Add(entry.Sno, entry.Id, entry.PlainText, entry.EncryptRDecryptText, entry.privatekey, entry.Mode, entry.UserId);
+                        }
+
+                        // Create a DataSet and add the DataTable to it
+                        DataSet dataSet = new DataSet();
+                        dataSet.Tables.Add(dataTable);
+
+
+                        if (dataSet != null && dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                        {
+                            GridRepeat.Visible = true;
+                            GridRepeat.DataSource = dataSet;
+                            GridRepeat.DataBind();
+                        }
+                        else
+                        {
+                            GridRepeat.Visible = false;
+                            ScriptManager.RegisterStartupScript(this.Page, GetType(), "AlertMessage", "$(function(){AlertMessage('error','No Records Found')});", true);
+                            return;
+                        }
+
+                    }
+
                 }
-                else
+                catch (Exception ex)
                 {
-                    GridRepeat.Visible = false;
+                    ScriptManager.RegisterStartupScript(this.Page, GetType(), "AlertMessage", "$(function(){AlertMessage('error','" + ex.Message + "')});", true);
+                    return;
                 }
             }
+
+
         }
         protected void Qpkey_SelectedIndexChanged(object sender, EventArgs e)
         {
             string value = Qpkey.SelectedValue;
-          
-                if(value=="Yes")
-                {
-                    pkey_group.Visible=true;
-                }
-                else
-                {
-                    pkey_group.Visible=false;
-                }
-            
+
+            if (value == "Yes")
+            {
+                pkey_group.Visible = true;
+            }
+            else
+            {
+                pkey_group.Visible = false;
+            }
+
         }
     }
 }
