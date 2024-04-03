@@ -119,19 +119,17 @@ namespace SecureCryptApp
             using (HttpClient client = new HttpClient())
             {
                 // API endpoint URL
+                string APIKEY = ConfigurationManager.AppSettings["Apikey"];
+                string APIEMAIL = ConfigurationManager.AppSettings["ApiEmail"];
                 string apiUrl = ConfigurationManager.AppSettings["ApiUrlHistory"];
 
                 // Prepare data to send to the API
-                var data = new { userId = userid };
+                var data = new { emailId = APIEMAIL };
 
                 try
                 {
                     // Convert data to JSON 
                     var content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
-
-                    //get from web.config
-                    string APIKEY = ConfigurationManager.AppSettings["Apikey"];
-                    string APIEMAIL = ConfigurationManager.AppSettings["ApiEmail"];
 
                     // Add API key to request headers
                     client.DefaultRequestHeaders.Add("APIKEY", APIKEY);
