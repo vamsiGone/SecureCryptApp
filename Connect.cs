@@ -73,16 +73,7 @@ namespace SecureCryptApp
             sda.Fill(ds);
             return ds;
         }
-        //public DataSet History(int userid)
-        //{
-        //    DataSet ds = new DataSet();
-        //    string query = "select row_number() over(order by id) as sno,* from encryptdecryptlog where userid=@userid";
-        //    SqlCommand command = new SqlCommand(query, objSqlConnection);
-        //    command.Parameters.AddWithValue("@userid", userid);
-        //    SqlDataAdapter sda = new SqlDataAdapter(command);
-        //    sda.Fill(ds);
-        //    return ds;
-        //}
+
 
         public int RaiseQuery(string name,string email,string subject,string message)
         {
